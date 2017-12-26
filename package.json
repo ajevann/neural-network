@@ -1,0 +1,19 @@
+{
+  "name": "neural-network",
+  "version": "1.0.0",
+  "description": "a node implementation of a simple neural network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ajevann/neural-network.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ajevann/neural-network/issues"
+  },
+  "homepage": "https://github.com/ajevann/neural-network#readme"
+}
