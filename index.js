@@ -45,32 +45,50 @@ function Neural_Network(){
     self.outputSize = 1;
     self.hiddenSize = 3;
     
-    self.W1 = math.multiply(math.ones(self.inputSize, self.hiddenSize), Math.random());
+    // self.W1 = math.multiply(math.ones(self.inputSize, self.hiddenSize), Math.random());
+    // self.W2 = math.multiply(math.ones(self.hiddenSize, self.outputSize), Math.random());
+    
     // self.W1 = math.multiply(math.ones(self.inputSize, self.hiddenSize), 0.5);
-    self.W2 = math.multiply(math.ones(self.hiddenSize, self.outputSize), Math.random());
     // self.W2 = math.multiply(math.ones(self.hiddenSize, self.outputSize), 0.5);
+
+    self.W1 = math.matrix([
+      [
+        0.554776535164,
+        0.554776535164,
+        0.554776535164
+      ], [ 
+        0.679216664472,
+        0.679216664472,
+        0.679216664472
+      ]
+    ]);
+
+    self.W2 = math.matrix([
+      [ 0.993301448355 ],
+      [ 0.993301448355 ],
+      [ 0.993301448355 ]
+    ]);
   };
   
   self.forward = function(X){
-     self.z = math.multiply(X, self.W1);
-     self.z2 = self.sigmoid(self.z);
-     self.z3 = math.multiply(self.z2, self.W2);
+    self.z = math.multiply(X, self.W1);
+    self.z2 = self.sigmoid(self.z);
+    self.z3 = math.multiply(self.z2, self.W2);
+    o = self.sigmoid(self.z3);
 
-     o = self.sigmoid(self.z3);
-
-     return o;
+    return o;
   };
 
   self.sigmoid = function(s){ //fix this to handle math.matrixsp
     var a = math.exp(math.multiply(s, -1));
     var b = math.add(a, 1);
     var c = math.dotDivide(1, b);
+    
     return c;
   };
 
-  self.sigmoidPrime = function(s){ //fix this to handle math.matrix
-    var a = math.multiply(s, -1);
-    var b = math.add(1, s);
+  self.sigmoidPrime = function(s){ //fix this to handle math.matrix    
+    var b = math.subtract(1, s);
     var c = math.dotMultiply(s, b);
     return c;
   };
@@ -82,7 +100,9 @@ function Neural_Network(){
 
     var W2Transpose = math.transpose(self.W2);
     self.z2_error = math.multiply(self.o_delta, W2Transpose);
-    self.z2_delta = math.multiply(self.z2_error, self.sigmoidPrime(self.z2));
+
+    var z2sigmoidPrime = self.sigmoidPrime(self.z2);
+    self.z2_delta = math.dotMultiply(self.z2_error, z2sigmoidPrime);
 
     var a = math.transpose(X);
     var b = math.multiply(a, self.z2_delta);
@@ -105,7 +125,7 @@ function Neural_Network(){
 
   self.predict = function(){
     // console.log("Input (scaled): " + xPredicted);
-    console.log("Output: " + self.forward(xPredicted));
+    console.log("Final Output: " + self.forward(xPredicted));
   };
 
   self.init();
@@ -123,10 +143,17 @@ function run(){
 
   var i = 0;
   for (i = 0; i < 1000; i++){
-    // console.log('Input (scaled): \n', X.toString());
-    // console.log('Actual Output: \n', y.toString());
-    // console.log('Predicted Output: \n', NN.forward(X).toString());
-    // console.log('Loss: \n', math.mean(math.square(y - NN.forward(X))));
+    var forward = NN.forward(X);
+    var difference = math.subtract(y, forward);
+    var square = math.square(difference);
+    var loss = math.mean(square);
+
+    // console.log('\n############################\n');
+    // console.log('Input (scaled):', X.toString());
+    // console.log('Actual Output:', y.toString());
+    // console.log('Predicted Output:', forward.toString());
+    // console.log('Loss:', loss.toString());
+    // console.log('############################');
     // console.log('\n');
 
     NN.train(X, y);
@@ -138,7 +165,7 @@ function run(){
 
 var X = math.matrix([[2,9], [1,5], [3,6]]);
 var y = math.matrix([[92], [86], [89]]);
-var xPredicted = math.matrix([[4,1]]);
+var xPredicted = math.matrix([[4, 8]]);
 
 var xMax = math.max(X, 0);
 X = normalize(X, xMax);
@@ -149,7 +176,7 @@ xPredicted = normalize(xPredicted, xPredictedMax);
 var yMax = 100;
 y = normalize(y, yMax);
 
-var i;
-for(i = 0; i < 100; i++){
+var j;
+for(j = 0; j < 10; j++){
   run();
 }
